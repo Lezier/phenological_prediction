@@ -8,28 +8,34 @@
   "artefactos_reutilizados": [
     {
       "ruta": "models/random_forest_a_final.joblib",
+      "modo_hash": "sha256-raw",
       "sha256": "71C6CBA84E3A6E43A9C7807AF23338B77FBD93B786F0E08F66B8434012ABAD9E"
     },
     {
       "ruta": "output/comparacion_consolidada.csv",
-      "sha256": "A77A36CA2211054F053450772C6611EB1665C5424D21DD2C12409973555A076D"
+      "modo_hash": "sha256-lf",
+      "sha256": "70AD0B0A4365D337F5AECBC67A77A014B6AF515B8A87B8375B72D7E397923BD2"
     },
     {
       "ruta": "output/configuracion_ejecucion.json",
-      "sha256": "91ED39A5CE929FF6F623466BD47C71CB53475E1349B1B04C43D16CE37CF1CB0E"
+      "modo_hash": "sha256-lf",
+      "sha256": "5F36BDF21E8F77807CCF294E43485B88A66DD89E6F518E5B60925E357082DB47"
     },
     {
       "ruta": "output/metadata_modelo_final.json",
-      "sha256": "EAA5D520061CD2E8A6A669E6F748486073C3F95782C09396B7B6591BAC822BE7"
+      "modo_hash": "sha256-lf",
+      "sha256": "24448BD3B2CAEEB44FC1E81AD57E2D18DAEA9AD3473113B7AF9A4F8F7E3143AA"
     }
   ],
   "datos": [
     {
       "ruta": "data/base_fenologia_clima.csv",
+      "modo_hash": "sha256-lf",
       "sha256": "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7"
     },
     {
       "ruta": "data/base_fenologia_clima_satelite.csv",
+      "modo_hash": "sha256-lf",
       "sha256": "0C307E8CAAEEE04A87EB572AA675C4BB7C97EF1C1BC5C0D36C7018FB7129ADCA"
     }
   ],

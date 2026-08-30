@@ -38,6 +38,12 @@ def sha256_archivo(ruta: Path) -> str:
     return resumen.hexdigest().upper()
 
 
+def sha256_texto_lf(ruta: Path) -> str:
+    """Calcula SHA-256 tras normalizar finales de línea de texto a LF."""
+    contenido = ruta.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(contenido).hexdigest().upper()
+
+
 class ReleaseCandidateTest(unittest.TestCase):
     def test_datos_modelo_a(self) -> None:
         self.assertTrue(RUTA_DATOS.exists())
@@ -77,7 +83,14 @@ class ReleaseCandidateTest(unittest.TestCase):
         for artefacto in artefactos:
             ruta = RAIZ / artefacto["ruta"]
             self.assertTrue(ruta.exists())
-            self.assertEqual(sha256_archivo(ruta), artefacto["sha256"])
+            modo_hash = artefacto["modo_hash"]
+            self.assertIn(modo_hash, {"sha256-raw", "sha256-lf"})
+            hash_observado = (
+                sha256_archivo(ruta)
+                if modo_hash == "sha256-raw"
+                else sha256_texto_lf(ruta)
+            )
+            self.assertEqual(hash_observado, artefacto["sha256"])
 
 
 if __name__ == "__main__":

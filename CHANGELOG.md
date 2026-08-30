@@ -5,7 +5,8 @@
 - Fija finales de línea LF para los CSV mediante `.gitattributes`.
 - Marca modelos Joblib e imágenes PNG como archivos binarios.
 - Amplía las pruebas de integridad a ambos CSV y verifica ausencia de CRLF.
-- Evita falsos negativos de SHA-256 entre clones con configuraciones Git distintas.
+- Declara hashes `sha256-lf` para texto y `sha256-raw` para binarios, evitando
+  falsos negativos entre clones con configuraciones Git distintas.
 - Conserva sin cambios los datos, métricas, parámetros y modelo de `0.1.0-rc.1`.
 
 ## 0.1.0-rc.1 - 2026-08-29
