@@ -1,0 +1,77 @@
+{
+  "version_proyecto": "0.1.0-rc.1",
+  "fecha_entrenamiento": "2026-08-29T21:15:10-04:00",
+  "modelo": "Random Forest A - clima",
+  "proposito": "Artefacto de inferencia para la demostración académica.",
+  "muestras_entrenamiento": 1091,
+  "estaciones": 41,
+  "variables": [
+    "clima_temp_media",
+    "clima_temp_max_media",
+    "clima_temp_min_media",
+    "clima_precip_acumulada",
+    "clima_radiacion_media",
+    "clima_humedad_media",
+    "clima_gdd_acumulado"
+  ],
+  "clases": [
+    "Brotación / desarrollo foliar",
+    "Cosecha / post-cosecha",
+    "Envero / maduración",
+    "Floración",
+    "Senescencia / caída de hojas"
+  ],
+  "imputacion": "Mediana ajustada con las 1091 filas del entrenamiento final.",
+  "parametros_random_forest": {
+    "n_estimators": 400,
+    "class_weight": "balanced",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "semilla": 42,
+  "version_python": "3.13.5",
+  "version_scikit_learn": "1.6.1",
+  "archivo_datos": "base_fenologia_clima.csv",
+  "sha256_datos": "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7",
+  "rangos_entrenamiento": {
+    "clima_temp_media": {
+      "min": 1.7583333333333333,
+      "max": 28.580666666666666
+    },
+    "clima_temp_max_media": {
+      "min": 7.008333333333332,
+      "max": 37.614
+    },
+    "clima_temp_min_media": {
+      "min": -3.494,
+      "max": 23.863333333333333
+    },
+    "clima_precip_acumulada": {
+      "min": 0.03,
+      "max": 187.88
+    },
+    "clima_radiacion_media": {
+      "min": 5.461666666666668,
+      "max": 29.378
+    },
+    "clima_humedad_media": {
+      "min": 35.943,
+      "max": 88.52866666666668
+    },
+    "clima_gdd_acumulado": {
+      "min": 0.0,
+      "max": 557.4200000000001
+    }
+  },
+  "evidencia_desempeno": {
+    "protocolo": "StratifiedGroupKFold por s_id, 5 folds",
+    "accuracy_promedio": 0.8346299027206735,
+    "accuracy_desviacion": 0.13726734207631164,
+    "f1_macro_promedio": 0.7204350871824743,
+    "f1_macro_desviacion": 0.11423188916818808,
+    "fuente": "output/comparacion_consolidada.csv"
+  },
+  "advertencia": "Uso experimental con datos europeos; no validado para operación en Chile y no sustituye evaluación agronómica.",
+  "archivo_modelo": "models\\random_forest_a_final.joblib",
+  "sha256_modelo": "71C6CBA84E3A6E43A9C7807AF23338B77FBD93B786F0E08F66B8434012ABAD9E"
+}

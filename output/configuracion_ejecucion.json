@@ -1,0 +1,180 @@
+{
+  "version_proyecto": "0.1.0-rc.1",
+  "fecha_ejecucion": "2026-08-29T20:20:44-04:00",
+  "semilla": 42,
+  "folds": 5,
+  "version_python": "3.13.5",
+  "version_scikit_learn": "1.6.1",
+  "parametros_random_forest": {
+    "n_estimators": 400,
+    "class_weight": "balanced",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "archivos_datos": [
+    {
+      "archivo": "base_fenologia_clima.csv",
+      "sha256": "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7"
+    },
+    {
+      "archivo": "base_fenologia_clima_satelite.csv",
+      "sha256": "0C307E8CAAEEE04A87EB572AA675C4BB7C97EF1C1BC5C0D36C7018FB7129ADCA"
+    }
+  ],
+  "modelos": [
+    {
+      "modelo_datos": "a",
+      "titulo": "Modelo A - clima",
+      "validacion": "aleatoria",
+      "grupo": null,
+      "muestras": 1091,
+      "estaciones": 41,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    },
+    {
+      "modelo_datos": "a",
+      "titulo": "Modelo A - clima",
+      "validacion": "por_estacion",
+      "grupo": "s_id",
+      "muestras": 1091,
+      "estaciones": 41,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    },
+    {
+      "modelo_datos": "aprima",
+      "titulo": "Modelo A' - control clima",
+      "validacion": "aleatoria",
+      "grupo": null,
+      "muestras": 657,
+      "estaciones": 38,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    },
+    {
+      "modelo_datos": "aprima",
+      "titulo": "Modelo A' - control clima",
+      "validacion": "por_estacion",
+      "grupo": "s_id",
+      "muestras": 657,
+      "estaciones": 38,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    },
+    {
+      "modelo_datos": "b",
+      "titulo": "Modelo B - clima + NDVI",
+      "validacion": "aleatoria",
+      "grupo": null,
+      "muestras": 657,
+      "estaciones": 38,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado",
+        "ndvi"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    },
+    {
+      "modelo_datos": "b",
+      "titulo": "Modelo B - clima + NDVI",
+      "validacion": "por_estacion",
+      "grupo": "s_id",
+      "muestras": 657,
+      "estaciones": 38,
+      "variables": [
+        "clima_temp_media",
+        "clima_temp_max_media",
+        "clima_temp_min_media",
+        "clima_precip_acumulada",
+        "clima_radiacion_media",
+        "clima_humedad_media",
+        "clima_gdd_acumulado",
+        "ndvi"
+      ],
+      "clases": [
+        "Brotación / desarrollo foliar",
+        "Cosecha / post-cosecha",
+        "Envero / maduración",
+        "Floración",
+        "Senescencia / caída de hojas"
+      ],
+      "imputacion": "Mediana ajustada exclusivamente con train dentro de cada fold."
+    }
+  ],
+  "nota": "La validacion por estacion usa StratifiedGroupKFold con s_id como grupo.",
+  "version_tensorflow": "2.21.0"
+}
