@@ -40,7 +40,8 @@ phenological_prediction/
 |-- DATA_PROVENANCE.md            procedencia y advertencias de redistribución
 |-- requirements.txt              dependencias exactas del RC
 |-- VERSION                       versión del proyecto
-`-- CHANGELOG.md                  cambios del release candidate
+|-- CHANGELOG.md                  cambios del release candidate
+`-- RELEASE_MANIFEST.json         identidad y hashes de artefactos del RC
 ```
 
 ## Requisitos
@@ -152,9 +153,14 @@ artefacto, orden de variables y coherencia de probabilidades.
 
 ## Estado del release
 
-Versión: `0.1.0-rc.1`.
+Versión: `0.1.0-rc.2`.
 
 El RC incluye evidencia reproducible, modelo final, demo y controles mínimos.
 La publicación pública de los CSV queda condicionada a revisar las reglas de
 redistribución descritas en `DATA_PROVENANCE.md`. No se ha definido todavía una
 licencia para el código.
+
+`rc.2` corrige exclusivamente la representación de finales de línea de los CSV
+entre clones Git. No modifica observaciones, métricas, parámetros ni el modelo.
+`RELEASE_MANIFEST.json` vincula el candidato con la evidencia y el modelo
+generados en `rc.1`, conservando su procedencia sin simular una nueva ejecución.

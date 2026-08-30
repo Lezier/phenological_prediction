@@ -13,9 +13,12 @@ import pandas as pd
 
 RAIZ = Path(__file__).resolve().parents[1]
 RUTA_DATOS = RAIZ / "data" / "base_fenologia_clima.csv"
+RUTA_DATOS_SATELITE = RAIZ / "data" / "base_fenologia_clima_satelite.csv"
 RUTA_MODELO = RAIZ / "models" / "random_forest_a_final.joblib"
 RUTA_METADATA = RAIZ / "output" / "metadata_modelo_final.json"
+RUTA_MANIFIESTO = RAIZ / "RELEASE_MANIFEST.json"
 HASH_DATOS = "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7"
+HASH_DATOS_SATELITE = "0C307E8CAAEEE04A87EB572AA675C4BB7C97EF1C1BC5C0D36C7018FB7129ADCA"
 VARIABLES = [
     "clima_temp_media",
     "clima_temp_max_media",
@@ -38,7 +41,11 @@ def sha256_archivo(ruta: Path) -> str:
 class ReleaseCandidateTest(unittest.TestCase):
     def test_datos_modelo_a(self) -> None:
         self.assertTrue(RUTA_DATOS.exists())
+        self.assertTrue(RUTA_DATOS_SATELITE.exists())
+        self.assertNotIn(b"\r\n", RUTA_DATOS.read_bytes())
+        self.assertNotIn(b"\r\n", RUTA_DATOS_SATELITE.read_bytes())
         self.assertEqual(sha256_archivo(RUTA_DATOS), HASH_DATOS)
+        self.assertEqual(sha256_archivo(RUTA_DATOS_SATELITE), HASH_DATOS_SATELITE)
         datos = pd.read_csv(RUTA_DATOS)
         obligatorias = [
             columna for columna in VARIABLES if columna != "clima_radiacion_media"
@@ -61,6 +68,16 @@ class ReleaseCandidateTest(unittest.TestCase):
         probabilidades = paquete["pipeline"].predict_proba(datos[VARIABLES])[0]
         self.assertEqual(len(probabilidades), 5)
         self.assertTrue(np.isclose(probabilidades.sum(), 1.0))
+
+    def test_manifiesto_release(self) -> None:
+        version = (RAIZ / "VERSION").read_text(encoding="utf-8").strip()
+        manifiesto = json.loads(RUTA_MANIFIESTO.read_text(encoding="utf-8"))
+        self.assertEqual(manifiesto["version"], version)
+        artefactos = manifiesto["artefactos_reutilizados"] + manifiesto["datos"]
+        for artefacto in artefactos:
+            ruta = RAIZ / artefacto["ruta"]
+            self.assertTrue(ruta.exists())
+            self.assertEqual(sha256_archivo(ruta), artefacto["sha256"])
 
 
 if __name__ == "__main__":

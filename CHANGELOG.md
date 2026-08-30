@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-rc.2 - 2026-08-29
+
+- Fija finales de línea LF para los CSV mediante `.gitattributes`.
+- Marca modelos Joblib e imágenes PNG como archivos binarios.
+- Amplía las pruebas de integridad a ambos CSV y verifica ausencia de CRLF.
+- Evita falsos negativos de SHA-256 entre clones con configuraciones Git distintas.
+- Conserva sin cambios los datos, métricas, parámetros y modelo de `0.1.0-rc.1`.
+
 ## 0.1.0-rc.1 - 2026-08-29
 
 - Incorpora comparación reproducible entre red densa y Random Forest.

@@ -1,0 +1,37 @@
+{
+  "version": "0.1.0-rc.2",
+  "fecha": "2026-08-29T22:39:33-04:00",
+  "base_tecnica": "0.1.0-rc.1",
+  "cambio": "Normalización LF/CRLF y ampliación de pruebas de integridad.",
+  "impacto_modelo": "Ninguno",
+  "impacto_metricas": "Ninguno",
+  "artefactos_reutilizados": [
+    {
+      "ruta": "models/random_forest_a_final.joblib",
+      "sha256": "71C6CBA84E3A6E43A9C7807AF23338B77FBD93B786F0E08F66B8434012ABAD9E"
+    },
+    {
+      "ruta": "output/comparacion_consolidada.csv",
+      "sha256": "A77A36CA2211054F053450772C6611EB1665C5424D21DD2C12409973555A076D"
+    },
+    {
+      "ruta": "output/configuracion_ejecucion.json",
+      "sha256": "91ED39A5CE929FF6F623466BD47C71CB53475E1349B1B04C43D16CE37CF1CB0E"
+    },
+    {
+      "ruta": "output/metadata_modelo_final.json",
+      "sha256": "EAA5D520061CD2E8A6A669E6F748486073C3F95782C09396B7B6591BAC822BE7"
+    }
+  ],
+  "datos": [
+    {
+      "ruta": "data/base_fenologia_clima.csv",
+      "sha256": "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7"
+    },
+    {
+      "ruta": "data/base_fenologia_clima_satelite.csv",
+      "sha256": "0C307E8CAAEEE04A87EB572AA675C4BB7C97EF1C1BC5C0D36C7018FB7129ADCA"
+    }
+  ],
+  "estado": "Candidato pendiente de verificación desde clon limpio"
+}

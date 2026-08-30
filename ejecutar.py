@@ -63,7 +63,9 @@ CONFIG = {
 }
 SEMILLA = 42
 FOLDS = 5
-VERSION_PROYECTO = "0.1.0-rc.1"
+VERSION_PROYECTO = (Path(__file__).resolve().parent / "VERSION").read_text(
+    encoding="utf-8"
+).strip()
 PARAMETROS_RANDOM_FOREST = {
     "n_estimators": 400,
     "class_weight": "balanced",
