@@ -1,6 +1,7 @@
 {
-  "version_proyecto": "0.1.0-rc.1",
-  "fecha_entrenamiento": "2026-08-29T21:15:10-04:00",
+  "version_proyecto": "0.1.0-rc.3",
+  "version_esquema_paquete": 2,
+  "fecha_entrenamiento": "2026-08-31T10:32:31-04:00",
   "modelo": "Random Forest A - clima",
   "proposito": "Artefacto de inferencia para la demostración académica.",
   "muestras_entrenamiento": 1091,
@@ -22,15 +23,46 @@
     "Senescencia / caída de hojas"
   ],
   "imputacion": "Mediana ajustada con las 1091 filas del entrenamiento final.",
-  "parametros_random_forest": {
+  "parametros_random_forest_explicitos": {
     "n_estimators": 400,
     "class_weight": "balanced",
     "random_state": 42,
     "n_jobs": -1
   },
+  "parametros_random_forest_efectivos": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 400,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "procedencia_hiperparametros": {
+    "estado": "configuracion_heuristica_no_optimizada",
+    "procedencia": "incorporada_por_chatgpt_en_clean_comparison",
+    "seleccion_personal_por_francisco_lopez": false,
+    "tuning_sistematico": false,
+    "nota": "Los parametros no especificados conservan los valores predeterminados de la version instalada de scikit-learn."
+  },
   "semilla": 42,
   "version_python": "3.13.5",
+  "version_numpy": "2.5.2",
+  "version_pandas": "2.3.3",
   "version_scikit_learn": "1.6.1",
+  "version_joblib": "1.5.3",
   "archivo_datos": "base_fenologia_clima.csv",
   "sha256_datos": "0397C7A0B61B76388C22A1CDD1F13BCB2B7E10069C7BBB2935F0ADCC2E5CF6B7",
   "rangos_entrenamiento": {
@@ -65,13 +97,20 @@
   },
   "evidencia_desempeno": {
     "protocolo": "StratifiedGroupKFold por s_id, 5 folds",
+    "n_folds": 5,
     "accuracy_promedio": 0.8346299027206735,
-    "accuracy_desviacion": 0.13726734207631164,
+    "accuracy_desviacion": 0.1372673420763116,
     "f1_macro_promedio": 0.7204350871824743,
-    "f1_macro_desviacion": 0.11423188916818808,
-    "fuente": "output/comparacion_consolidada.csv"
+    "f1_macro_desviacion": 0.114231889168188,
+    "f1_weighted_promedio": 0.8387859811339637,
+    "f1_weighted_desviacion": 0.129905708285621,
+    "fuente": "output/comparacion_consolidada.csv",
+    "sha256_fuente": "0AB8AA5FCE99070CE17B0DC9C562D48DD7AC524A517B804D34DEB69020145C37",
+    "nota": "Estimación obtenida por validación cruzada; no corresponde al entrenamiento final con todas las filas."
   },
-  "advertencia": "Uso experimental con datos europeos; no validado para operación en Chile y no sustituye evaluación agronómica.",
-  "archivo_modelo": "models\\random_forest_a_final.joblib",
-  "sha256_modelo": "71C6CBA84E3A6E43A9C7807AF23338B77FBD93B786F0E08F66B8434012ABAD9E"
+  "probabilidades_calibradas": false,
+  "nota_probabilidades": "predict_proba entrega puntajes no calibrados; no deben interpretarse como probabilidades garantizadas.",
+  "advertencia": "Uso experimental con datos europeos; no validado para operación en Chile y no sustituye evaluación agronómica. Las probabilidades mostradas no han sido calibradas.",
+  "archivo_modelo": "models/random_forest_a_final.joblib",
+  "sha256_modelo": "64CEDBFD3F73A74F1BBF651BAF193E2F7C9A998EDB566C4A3EE03EF30DAC04CD"
 }

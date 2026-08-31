@@ -1,5 +1,6 @@
 .venv/
 .matplotlib/
+output/ensayo_reducido/
 __pycache__/
 *.py[cod]
 .pytest_cache/

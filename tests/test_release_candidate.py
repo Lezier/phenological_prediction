@@ -10,6 +10,9 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
+import sklearn
+
+from configuracion import PARAMETROS_RANDOM_FOREST, VERSION_PROYECTO
 
 RAIZ = Path(__file__).resolve().parents[1]
 RUTA_DATOS = RAIZ / "data" / "base_fenologia_clima.csv"
@@ -28,6 +31,12 @@ VARIABLES = [
     "clima_humedad_media",
     "clima_gdd_acumulado",
 ]
+
+
+def manifiesto_corresponde_a_version_actual() -> bool:
+    version = (RAIZ / "VERSION").read_text(encoding="utf-8").strip()
+    manifiesto = json.loads(RUTA_MANIFIESTO.read_text(encoding="utf-8"))
+    return manifiesto.get("version") == version
 
 
 def sha256_archivo(ruta: Path) -> str:
@@ -65,21 +74,59 @@ class ReleaseCandidateTest(unittest.TestCase):
         self.assertTrue(RUTA_METADATA.exists())
         paquete = joblib.load(RUTA_MODELO)
         metadata = json.loads(RUTA_METADATA.read_text(encoding="utf-8"))
+        self.assertEqual(paquete["version_esquema"], 2)
+        self.assertEqual(metadata["version_esquema_paquete"], 2)
+        self.assertEqual(paquete["version_proyecto"], VERSION_PROYECTO)
+        self.assertEqual(metadata["version_proyecto"], VERSION_PROYECTO)
         self.assertEqual(paquete["variables"], VARIABLES)
+        self.assertEqual(paquete["sha256_datos"], HASH_DATOS)
+        self.assertFalse(paquete["probabilidades_calibradas"])
+        self.assertFalse(metadata["probabilidades_calibradas"])
         self.assertEqual(metadata["muestras_entrenamiento"], 1091)
         self.assertEqual(metadata["sha256_datos"], HASH_DATOS)
         self.assertEqual(metadata["sha256_modelo"], sha256_archivo(RUTA_MODELO))
+        self.assertEqual(metadata["version_numpy"], np.__version__)
+        self.assertEqual(metadata["version_pandas"], pd.__version__)
+        self.assertEqual(metadata["version_scikit_learn"], sklearn.__version__)
+        self.assertEqual(metadata["version_joblib"], joblib.__version__)
+        self.assertEqual(
+            metadata["parametros_random_forest_explicitos"],
+            PARAMETROS_RANDOM_FOREST,
+        )
+        self.assertEqual(metadata["archivo_modelo"], "models/random_forest_a_final.joblib")
+        self.assertEqual(
+            metadata["evidencia_desempeno"]["sha256_fuente"],
+            sha256_archivo(RAIZ / "output" / "comparacion_consolidada.csv"),
+        )
 
         datos = pd.read_csv(RUTA_DATOS).dropna(subset=VARIABLES).head(1)
         probabilidades = paquete["pipeline"].predict_proba(datos[VARIABLES])[0]
         self.assertEqual(len(probabilidades), 5)
         self.assertTrue(np.isclose(probabilidades.sum(), 1.0))
 
+    @unittest.skipUnless(
+        manifiesto_corresponde_a_version_actual(),
+        "El manifiesto no corresponde a la version de trabajo.",
+    )
     def test_manifiesto_release(self) -> None:
         version = (RAIZ / "VERSION").read_text(encoding="utf-8").strip()
         manifiesto = json.loads(RUTA_MANIFIESTO.read_text(encoding="utf-8"))
+        self.assertEqual(manifiesto["version_esquema"], 2)
         self.assertEqual(manifiesto["version"], version)
-        artefactos = manifiesto["artefactos_reutilizados"] + manifiesto["datos"]
+        self.assertEqual(manifiesto["algoritmo_hash"], "SHA-256")
+        self.assertEqual(manifiesto["estado"], "Candidato RC3 verificado")
+        self.assertEqual(manifiesto["autorreferencia"], "excluida")
+        self.assertIn("output/ensayo_reducido/", manifiesto["exclusiones"])
+        artefactos = manifiesto["artefactos"] + manifiesto["datos"]
+        rutas = [artefacto["ruta"] for artefacto in artefactos]
+        self.assertEqual(len(rutas), len(set(rutas)))
+        self.assertIn("models/random_forest_a_final.joblib", rutas)
+        self.assertIn("output/metricas_por_fold.csv", rutas)
+        self.assertIn("output/comparacion_consolidada.csv", rutas)
+        self.assertIn("output/asignacion_folds.csv", rutas)
+        self.assertIn("output/pesos_clase_por_fold.csv", rutas)
+        self.assertIn("output/tiempos_por_fold.csv", rutas)
+        self.assertFalse(any(ruta.startswith("output/ensayo_reducido/") for ruta in rutas))
         for artefacto in artefactos:
             ruta = RAIZ / artefacto["ruta"]
             self.assertTrue(ruta.exists())

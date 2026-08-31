@@ -1,31 +1,18 @@
 {
-  "version": "0.1.0-rc.2",
-  "fecha": "2026-08-29T22:39:33-04:00",
-  "base_tecnica": "0.1.0-rc.1",
-  "cambio": "Normalización LF/CRLF y ampliación de pruebas de integridad.",
-  "impacto_modelo": "Ninguno",
-  "impacto_metricas": "Ninguno",
-  "artefactos_reutilizados": [
-    {
-      "ruta": "models/random_forest_a_final.joblib",
-      "modo_hash": "sha256-raw",
-      "sha256": "71C6CBA84E3A6E43A9C7807AF23338B77FBD93B786F0E08F66B8434012ABAD9E"
-    },
-    {
-      "ruta": "output/comparacion_consolidada.csv",
-      "modo_hash": "sha256-lf",
-      "sha256": "70AD0B0A4365D337F5AECBC67A77A014B6AF515B8A87B8375B72D7E397923BD2"
-    },
-    {
-      "ruta": "output/configuracion_ejecucion.json",
-      "modo_hash": "sha256-lf",
-      "sha256": "5F36BDF21E8F77807CCF294E43485B88A66DD89E6F518E5B60925E357082DB47"
-    },
-    {
-      "ruta": "output/metadata_modelo_final.json",
-      "modo_hash": "sha256-lf",
-      "sha256": "24448BD3B2CAEEB44FC1E81AD57E2D18DAEA9AD3473113B7AF9A4F8F7E3143AA"
-    }
+  "version_esquema": 2,
+  "version": "0.1.0-rc.3",
+  "fecha_congelamiento": "2026-08-31T11:40:19-04:00",
+  "base_tecnica": "0.1.0-rc.2",
+  "estado": "Candidato RC3 verificado",
+  "algoritmo_hash": "SHA-256",
+  "normalizacion_texto": "Los archivos con modo sha256-lf normalizan CRLF a LF antes del calculo; los binarios usan sus bytes exactos.",
+  "autorreferencia": "excluida",
+  "exclusiones": [
+    "RELEASE_MANIFEST.json",
+    "output/ensayo_reducido/",
+    ".venv/",
+    ".matplotlib/",
+    "__pycache__/"
   ],
   "datos": [
     {
@@ -39,5 +26,144 @@
       "sha256": "0C307E8CAAEEE04A87EB572AA675C4BB7C97EF1C1BC5C0D36C7018FB7129ADCA"
     }
   ],
-  "estado": "Candidato pendiente de verificación desde clon limpio"
+  "artefactos": [
+    {
+      "ruta": "models/random_forest_a_final.joblib",
+      "categoria": "modelo_inferencia",
+      "modo_hash": "sha256-raw",
+      "sha256": "64CEDBFD3F73A74F1BBF651BAF193E2F7C9A998EDB566C4A3EE03EF30DAC04CD"
+    },
+    {
+      "ruta": "output/asignacion_folds.csv",
+      "categoria": "evidencia_experimental",
+      "modo_hash": "sha256-lf",
+      "sha256": "AF61DB60C9DEB117EDD85D25C6F5856FBCD9FC6E0B99A1A8B515E6C228B412C1"
+    },
+    {
+      "ruta": "output/comparacion_consolidada.csv",
+      "categoria": "resultado_oficial",
+      "modo_hash": "sha256-lf",
+      "sha256": "444C47D5DC2421AC52515E5E6EC053EDDD284725537E965BCE71F98964A3679E"
+    },
+    {
+      "ruta": "output/comparacion_metricas.png",
+      "categoria": "visualizacion_oficial",
+      "modo_hash": "sha256-raw",
+      "sha256": "153F3ED8E2BE1ECCE970E0E73DB1EB1D3D2AEB9F56DEB9A079AC906498D79E66"
+    },
+    {
+      "ruta": "output/configuracion_ejecucion.json",
+      "categoria": "configuracion_ejecucion",
+      "modo_hash": "sha256-lf",
+      "sha256": "FDBFEAAE70FF0F27CF3E7ABD6C86B97F60F952124B254186D74631CB57B521DB"
+    },
+    {
+      "ruta": "output/ejecucion_completa_rc3.log",
+      "categoria": "log_ejecucion",
+      "modo_hash": "sha256-lf",
+      "sha256": "846D64710A4D9E20D0FEE393C2A398BE07FF0B16BAD4F02C8AF077F398F2B590"
+    },
+    {
+      "ruta": "output/entrenamiento_modelo_final_rc3.log",
+      "categoria": "log_entrenamiento",
+      "modo_hash": "sha256-lf",
+      "sha256": "0007394DF40B5DFB83821A5D543192957E50A4C54BC871C6CB8039C9BA54E6DA"
+    },
+    {
+      "ruta": "output/metadata_modelo_final.json",
+      "categoria": "metadata_modelo",
+      "modo_hash": "sha256-lf",
+      "sha256": "BB11CF0CB5382815EA058B0858CA320ADF4E9B062678882BAD1AA1D486A123F0"
+    },
+    {
+      "ruta": "output/metricas_por_fold.csv",
+      "categoria": "resultado_oficial",
+      "modo_hash": "sha256-lf",
+      "sha256": "825A91FE4D010442162AD2C68DBB5F1CDE0AC42364A62EF3889D4484FEE27E74"
+    },
+    {
+      "ruta": "output/pesos_clase_por_fold.csv",
+      "categoria": "evidencia_experimental",
+      "modo_hash": "sha256-lf",
+      "sha256": "03B643C1E781614468631392159140A4B040B02593ED570766C4A6AD92D41DC4"
+    },
+    {
+      "ruta": "output/tiempos_por_fold.csv",
+      "categoria": "resultado_oficial",
+      "modo_hash": "sha256-lf",
+      "sha256": "5C9F5EE14A4622344AFD5DE52B50CCB850AA1280B7DA60DE1D8485B35D245370"
+    },
+    {
+      "ruta": "output/matriz_a_aleatoria_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "F0CC75FE32224C56FFBFE8EF629AC12922A687E5E676E3BF11610744E8289C25"
+    },
+    {
+      "ruta": "output/matriz_a_aleatoria_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "B39F5BE75BF66F855D6863F216853D448F56CCDA471072FCC344366C24A9C0E4"
+    },
+    {
+      "ruta": "output/matriz_a_por_estacion_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "653BCEE02351AC8E655638DBD1A1C5B731E4903806B819AEF517CFDD06FCB20B"
+    },
+    {
+      "ruta": "output/matriz_a_por_estacion_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "F2995ED5743BF760EDA4297C9F629D68AA70520EEEE5D9BDC140AC903EB3CFD6"
+    },
+    {
+      "ruta": "output/matriz_aprima_aleatoria_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "D32FA7A8B9E6F3B7D127C8BBE4A0D87F5580D990F8021D7331B0310ACF9D804F"
+    },
+    {
+      "ruta": "output/matriz_aprima_aleatoria_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "69FB7FC0EA589B026C191272880CC82DBED52CC9BB5491DD4D25E0741C708438"
+    },
+    {
+      "ruta": "output/matriz_aprima_por_estacion_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "EC7FF448F43C97B6E3C6FDA7DB82A819AE153FD49C31D194A4203FC140F01DF7"
+    },
+    {
+      "ruta": "output/matriz_aprima_por_estacion_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "225EAF37E459E248F4F0E192EB43A3759E90548C127410F78421FD4CBBAFEA98"
+    },
+    {
+      "ruta": "output/matriz_b_aleatoria_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "936A17C29AD583B52CFF189B2D25709DA69298561089858CEE9D8F4F05688303"
+    },
+    {
+      "ruta": "output/matriz_b_aleatoria_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "F62376C3A1FF1397B2F86725901DFDC7A4C73B8F55B1CE1844FC956474F5EAF6"
+    },
+    {
+      "ruta": "output/matriz_b_por_estacion_random_forest.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "D2AF6187CF7B48D999C0C36925AD9E60F1AF5BF00EB19560BC68E2082C7A212E"
+    },
+    {
+      "ruta": "output/matriz_b_por_estacion_red_densa.csv",
+      "categoria": "matriz_confusion",
+      "modo_hash": "sha256-lf",
+      "sha256": "8F5950E292DCE697AB2CA5E830325746DC6F973A600F6DB3739F78C01C6610FE"
+    }
+  ]
 }

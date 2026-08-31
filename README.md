@@ -1,291 +1,212 @@
-# Predicción de la macro-etapa fenológica de la vid
+# Phenological Prediction
 
-Proyecto académico en Python que clasifica cinco macro-etapas fenológicas de
-*Vitis vinifera* a partir de variables climáticas. La solución compara una red
-neuronal densa con Random Forest y utiliza **Random Forest A** como modelo del
-prototipo.
+Pipeline reproducible para clasificación de macro-etapas fenológicas de
+*Vitis vinifera*. El repositorio conserva la comparación experimental entre
+una red neuronal densa y Random Forest, y empaqueta **Random Forest A** como
+modelo de inferencia del prototipo.
 
-> **Advertencia de uso:** es una maqueta experimental entrenada con datos
-> europeos. No está validada para operación en Chile, no realiza una
-> recomendación agronómica y no sustituye la evaluación de un especialista.
+> Uso experimental: los datos son europeos y el modelo no ha sido validado
+> geográfica ni temporalmente para Chile. No constituye una recomendación
+> agronómica ni debe integrarse en decisiones productivas sin validación
+> adicional.
 
-## Estado del entregable
+## Estado
 
-| Campo | Estado |
+| Componente | Estado RC3 |
 |---|---|
-| Versión | `0.1.0-rc.2` |
-| Estado | Pre-release académico verificado desde un clon limpio |
-| Commit verificado | `96b4e94687e8ff0aa7f904509ec0c2cdb4f0751d` |
-| Modelo del prototipo | Random Forest A, solo clima |
-| Entrenamiento final | 1.091 observaciones y 41 estaciones |
-| Entradas de la demo | 7 variables climáticas |
-| Salida | 1 macro-etapa y probabilidades no calibradas para 5 clases |
-| Pruebas automáticas | 3/3 aprobadas en la verificación limpia |
+| Versión | `0.1.0-rc.3` |
+| Comparación oficial | Ejecutada y auditada en CP09–CP10 |
+| Modelo de inferencia | Random Forest A entrenado con 1.091 observaciones |
+| Contrato del paquete | Esquema 2; siete variables y cinco clases |
+| Suite actual | 41 pruebas, todas aprobadas después del congelamiento CP13 |
+| Manifiesto general | RC3; controla datos, modelo y resultados oficiales |
+| Commit RC3 | Pendiente de creación por el responsable del repositorio |
 
-El desarrollo funcional está completo: el repositorio contiene datos, código,
-resultados, modelo entrenado, demo y pruebas. Continúa identificado como
-**release candidate** (`rc`) porque todavía no ha sido promovido a la versión
-final `0.1.0`. `rc.2` corrige portabilidad de finales de línea y no cambia los
-datos, las métricas, los parámetros ni el modelo de `rc.1`.
+El estado `rc` identifica un pre-release. Los resultados, el modelo, la
+metadata y el manifiesto corresponden a RC3. La identificación por commit se
+completará cuando el responsable del repositorio registre este estado.
 
-## Qué puede hacer una persona con este proyecto
+## Diseño del sistema
 
-- Ejecutar una demostración con el modelo ya entrenado.
-- Introducir siete valores climáticos y obtener una macro-etapa probable.
-- Consultar la distribución de votos del bosque para las cinco clases.
-- Ejecutar pruebas automáticas de integridad.
-- Revisar las métricas y matrices ya generadas.
-- Opcionalmente, reproducir la comparación completa entre modelos.
-- Opcionalmente, volver a entrenar el artefacto final.
-
-**Para probar el prototipo no es necesario entrenar nuevamente.** El modelo
-`models/random_forest_a_final.joblib` ya está incluido.
-
-## Inicio rápido para una persona con conocimientos básicos de Python
-
-Este README comienza cuando el archivo de entrega ya fue extraído por completo.
-La recepción y extracción del paquete se explican en la guía externa entregada
-junto con el archivo ZIP. Desde este punto, todas las instrucciones se ejecutan
-dentro de la carpeta extraída `phenological_prediction`.
-
-### 1. Confirmar que está en la carpeta del proyecto
-
-En Windows, abra la carpeta ya extraída `phenological_prediction`, haga clic en
-la barra de direcciones del Explorador, escriba `powershell` y presione Enter.
-La terminal debe quedar ubicada dentro de la carpeta donde se encuentra este
-`README.md`.
-
-Puede comprobarlo con:
-
-```powershell
-Get-Location
-Get-ChildItem
+```text
+data/*.csv
+    │
+    ├── ejecutar.py
+    │     ├── folds.py                particiones compartidas
+    │     ├── ponderacion.py          pesos calculados solo con train
+    │     ├── medicion.py             tiempos por fold
+    │     └── output/                 métricas, matrices y evidencias
+    │
+    ├── entrenar_modelo_final.py
+    │     └── models/random_forest_a_final.joblib
+    │         + output/metadata_modelo_final.json
+    │
+    └── demo.py                       contrato de inferencia
 ```
 
-Entre los archivos mostrados deberían aparecer `demo.py`, `requirements.txt`
-y `VERSION`.
+La configuración efectiva y su procedencia se centralizan en
+[`configuracion.py`](configuracion.py). La evaluación y el entrenamiento final
+son procesos separados:
 
-### 2. Comprobar la versión de Python
+- `ejecutar.py` estima desempeño mediante validación cruzada;
+- `entrenar_modelo_final.py` ajusta el modelo seleccionado con todas las filas
+  de A para generar un artefacto utilizable, sin producir una nueva estimación
+  de desempeño.
 
-```powershell
-python --version
-```
+## Escenarios experimentales
 
-El proyecto fue verificado con **Python 3.13.5**. Una versión `3.13.x` es la
-opción recomendada. Si Windows indica que `python` no existe, instale Python
-3.13 desde su distribuidor habitual, marque la opción para añadir Python al
-`PATH`, cierre la terminal y ábrala nuevamente.
+| Escenario | Variables | Muestras | Función |
+|---|---:|---:|---|
+| A | 7 climáticas | 1.091 | Candidato con máxima cobertura disponible |
+| A′ | Las mismas 7 climáticas | 657 | Control sobre las filas con NDVI |
+| B | 7 climáticas + NDVI | 657 | Evaluación del aporte satelital |
 
-En algunos equipos Windows el comando disponible es `py`. Puede comprobarlo
-con:
+A′ y B contienen exactamente las mismas observaciones. Esto permite atribuir
+sus diferencias a la incorporación de NDVI dentro del experimento, sin mezclar
+el efecto con un cambio de muestra.
 
-```powershell
-py -3.13 --version
-```
+## Protocolo de evaluación
 
-Si utiliza `py -3.13`, úselo también al crear el entorno del paso siguiente.
+- Cinco folds con semilla 42.
+- Protocolo principal: `StratifiedGroupKFold` agrupado por `s_id`.
+- Control secundario: `StratifiedKFold` aleatorio.
+- Los dos clasificadores reutilizan la misma asignación de cada fold.
+- Imputadores, escaladores y ponderaciones se ajustan solo con train.
+- La red densa conserva el baseline heredado y su configuración documentada.
+- Random Forest usa 400 árboles, `class_weight="balanced"`,
+  `random_state=42` y `n_jobs=-1`; no hubo tuning sistemático.
 
-### 3. Crear un entorno virtual
+Resultados principales de A con validación agrupada por estación:
 
-Un **entorno virtual** es una carpeta privada que contiene una instalación de
-Python y las librerías necesarias para este proyecto. Evita mezclar TensorFlow,
-NumPy o scikit-learn con las versiones instaladas por otros programas.
+| Modelo | Accuracy | F1 macro | F1 weighted | Train medio | Inferencia media |
+|---|---:|---:|---:|---:|---:|
+| Random Forest | **0,834630 ± 0,137267** | **0,720435 ± 0,114232** | **0,838786 ± 0,129906** | 0,492875 s | 0,064380 s |
+| Red densa | 0,749204 ± 0,128915 | 0,641594 ± 0,139132 | 0,747154 ± 0,134848 | 6,001967 s | 0,109457 s |
 
-Crear el entorno no modifica el Python general del computador:
+Random Forest A se selecciona por el balance entre desempeño pareado, cobertura,
+velocidad, simplicidad y ausencia de dependencia de NDVI. En el subconjunto
+comparable y bajo validación agrupada, B queda por debajo de A′ en accuracy y
+F1 macro; este experimento no demuestra beneficio por agregar NDVI.
+
+La interpretación completa se encuentra en
+[`docs/auditoria_resultados_cp10.md`](docs/auditoria_resultados_cp10.md).
+
+## Requisitos del entorno
+
+- Python 3.13.x; artefacto final generado con Python 3.13.5.
+- Dependencias fijadas en [`requirements.txt`](requirements.txt).
+- Entorno verificado: NumPy 2.5.2, pandas 2.3.3, scikit-learn 1.6.1,
+  joblib 1.5.3 y TensorFlow 2.21.0.
+
+Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-```
-
-Si en el paso anterior usó `py -3.13`, ejecute:
-
-```powershell
-py -3.13 -m venv .venv
-```
-
-El comando crea una carpeta llamada `.venv`. Solo debe crearse una vez.
-
-### 4. Activar el entorno virtual
-
-Activar significa indicarle a la terminal que, mientras esa ventana permanezca
-abierta, debe usar el Python de `.venv`.
-
-#### Windows PowerShell
-
-```powershell
 .\.venv\Scripts\Activate.ps1
-```
-
-Cuando se activa correctamente, el inicio de la línea suele mostrar:
-
-```text
-(.venv) PS C:\ruta\phenological_prediction>
-```
-
-Si PowerShell bloquea el script de activación, habilítelo solamente para la
-ventana actual y vuelva a intentarlo:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-```
-
-Esta autorización termina al cerrar la ventana y no cambia permanentemente la
-política del computador.
-
-#### Windows CMD
-
-```bat
-.venv\Scripts\activate.bat
-```
-
-#### macOS o Linux
-
-```bash
-source .venv/bin/activate
-```
-
-La activación se realiza cada vez que se abre una terminal nueva. No es
-necesario volver a crear el entorno ni reinstalar las dependencias cada vez.
-
-Para salir del entorno:
-
-```text
-deactivate
-```
-
-### 5. Instalar las dependencias
-
-Con `(.venv)` visible al comienzo de la terminal:
-
-```powershell
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-```
-
-La descarga requiere conexión a internet y puede tardar varios minutos porque
-incluye TensorFlow. Al finalizar, compruebe que no existan dependencias rotas:
-
-```powershell
 python -m pip check
 ```
 
-La respuesta esperada es:
+macOS o Linux:
 
-```text
-No broken requirements found.
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip check
 ```
 
-### 6. Ejecutar las pruebas automáticas
+Los objetos joblib no garantizan compatibilidad binaria entre versiones
+arbitrarias de scikit-learn y nunca deben cargarse desde fuentes no confiables.
 
-```powershell
-python -m unittest discover -s tests -v
-```
+## Contrato de inferencia
 
-La ejecución correcta termina con:
+El artefacto [`models/random_forest_a_final.joblib`](models/random_forest_a_final.joblib)
+empaqueta el pipeline, orden de variables, clases, rangos observados, hash de
+datos, versión de proyecto y advertencias.
 
-```text
-Ran 3 tests
-OK
-```
+Orden posicional del CLI:
 
-Una advertencia `DeprecationWarning` de NumPy o Joblib no equivale a una prueba
-fallida. El resultado final debe ser `OK`.
+| Posición | Variable | Unidad |
+|---:|---|---|
+| 1 | `clima_temp_media` | °C |
+| 2 | `clima_temp_max_media` | °C |
+| 3 | `clima_temp_min_media` | °C |
+| 4 | `clima_precip_acumulada` | mm/ventana |
+| 5 | `clima_radiacion_media` | MJ/m²/día |
+| 6 | `clima_humedad_media` | % |
+| 7 | `clima_gdd_acumulado` | °C·día, base 10 °C |
 
-### 7. Ejecutar la demo
-
-Modo interactivo, solicitando los valores uno por uno:
-
-```powershell
-python demo.py
-```
-
-Modo reproducible con un ejemplo ya documentado:
+Inferencia por CLI:
 
 ```powershell
 python demo.py --valores 18.5 24 12 15 18.2 62 210
 ```
 
-La salida esperada para ese ejemplo comienza así:
+Inferencia programática con nombres —preferida sobre la interfaz posicional—:
 
-```text
-Resultado experimental
-Macro-etapa estimada: Cosecha / post-cosecha
-Probabilidades estimadas (no calibradas):
-  - Cosecha / post-cosecha: 38.2%
-  - Senescencia / caída de hojas: 35.5%
-  - Floración: 19.8%
-  - Envero / maduración: 4.2%
-  - Brotación / desarrollo foliar: 2.2%
+```python
+from demo import cargar_paquete, generar_prediccion
+
+paquete = cargar_paquete()
+resultado = generar_prediccion(
+    paquete,
+    {
+        "clima_temp_media": 18.5,
+        "clima_temp_max_media": 24.0,
+        "clima_temp_min_media": 12.0,
+        "clima_precip_acumulada": 15.0,
+        "clima_radiacion_media": 18.2,
+        "clima_humedad_media": 62.0,
+        "clima_gdd_acumulado": 210.0,
+    },
+)
 ```
 
-Las probabilidades representan la votación relativa de los árboles. No son una
-medida de certeza estadística calibrada.
+La respuesta contiene `macro_etapa`, un diccionario de cinco
+`probabilidades`, `variables_fuera_rango`, `advertencia` y
+`probabilidades_calibradas=False`. Los valores de `predict_proba` son puntajes
+no calibrados y no representan una certeza operacional garantizada.
 
-## Entradas de la demo
+## Flujos ejecutables
 
-Los siete números se ingresan siempre en el siguiente orden. Resumen una
-ventana de 30 días: los 29 días anteriores y el día del evento.
+### Suite automática
 
-| Posición | Variable | Interpretación | Unidad usada por el pipeline | Ejemplo |
-|---:|---|---|---|---:|
-| 1 | `clima_temp_media` | Temperatura media de la ventana | °C | 18.5 |
-| 2 | `clima_temp_max_media` | Promedio de las temperaturas máximas | °C | 24 |
-| 3 | `clima_temp_min_media` | Promedio de las temperaturas mínimas | °C | 12 |
-| 4 | `clima_precip_acumulada` | Precipitación acumulada | mm en la ventana | 15 |
-| 5 | `clima_radiacion_media` | Radiación solar media diaria | MJ/m²/día | 18.2 |
-| 6 | `clima_humedad_media` | Humedad relativa media | % | 62 |
-| 7 | `clima_gdd_acumulado` | Grados-día acumulados con base 10 °C | °C·día | 210 |
+```powershell
+python -m unittest discover -s tests -v
+```
 
-La demo no convierte unidades. Los valores deben entregarse en las mismas
-unidades utilizadas durante la preparación de los datos. Si una entrada queda
-fuera del rango observado en entrenamiento, la aplicación mostrará una
-advertencia, pero permitirá revisar el resultado experimental.
+El resultado esperado para el conjunto congelado en CP13 es `OK`: 41 pruebas,
+sin omisiones, fallos ni errores.
 
-## Por qué se seleccionó Random Forest A
+### Demo interactiva
 
-La hipótesis inicial utilizó una red neuronal densa. La retroalimentación
-docente motivó compararla formalmente con una alternativa más sencilla. Ambos
-clasificadores fueron evaluados con las mismas particiones dentro de cada
-escenario y con validación agrupada por estación como protocolo principal.
+```powershell
+python demo.py
+```
 
-| Modelo | Accuracy por estación | F1 macro por estación |
-|---|---:|---:|
-| Random Forest A - clima | **83,46% ± 13,73%** | **72,04% ± 11,42%** |
-| Red densa A - clima | 74,92% ± 12,89% | 64,16% ± 13,91% |
-| Random Forest A′ - control | 87,13% ± 14,42% | 70,88% ± 8,80% |
-| Random Forest B - clima + NDVI | 85,25% ± 14,98% | 69,19% ± 9,06% |
+### Ensayo reducido no oficial
 
-Random Forest A no fue elegido únicamente por una métrica. Fue seleccionado
-porque:
+```powershell
+python ejecutar.py --modelo a --ensayo-reducido
+```
 
-- superó a la red densa A en accuracy y F1 macro;
-- utiliza 1.091 observaciones y 41 estaciones;
-- obtuvo el mayor F1 macro entre los bosques evaluados;
-- no depende de la disponibilidad de NDVI;
-- es más simple de ejecutar, explicar y empaquetar para inferencia tabular.
+Genera un fold real aislado en `output/ensayo_reducido/`. Sus métricas no deben
+incorporarse al informe ni sustituir la corrida oficial.
 
-A′ utiliza solamente las 657 filas con NDVI válido y funciona como control para
-compararlo con B. Su mayor accuracy no implica automáticamente que deba
-reemplazar A, porque cubre 434 observaciones y tres estaciones menos. En el
-subconjunto comparable, añadir NDVI no mejoró los promedios frente a A′; esta
-conclusión se limita al dataset y al diseño experimental utilizados.
-
-## Reproducción técnica avanzada
-
-Las siguientes operaciones no son necesarias para probar la demo.
-
-### Reproducir la comparación completa
+### Comparación completa
 
 ```powershell
 python ejecutar.py
 ```
 
-La ejecución entrena 3 escenarios × 2 clasificadores × 2 estrategias de
-validación × 5 folds, es decir, 60 resultados de fold. Puede tardar y
-sobrescribe archivos dentro de `output/`.
+Ejecuta A, A′ y B; dos validaciones; cinco folds; y ambos clasificadores. El
+comando sobrescribe los resultados oficiales de `output/`, por lo que debe
+usarse deliberadamente y auditarse nuevamente.
 
-También puede ejecutar solamente un escenario:
+Restricción por escenario:
 
 ```powershell
 python ejecutar.py --modelo a
@@ -293,137 +214,115 @@ python ejecutar.py --modelo aprima
 python ejecutar.py --modelo b
 ```
 
-Durante esta ejecución TensorFlow puede mostrar advertencias sobre
-`tf.function retracing`. Son advertencias de rendimiento y no un error si el
-proceso continúa y genera los archivos de salida.
-
-### Volver a entrenar el modelo final
+### Regeneración del modelo final
 
 ```powershell
 python entrenar_modelo_final.py
 ```
 
-Este comando vuelve a ajustar Random Forest A con las 1.091 filas y reemplaza:
+Sobrescribe el `.joblib`, la metadata y su log. Después de ejecutarlo deben
+recalcularse los hashes del manifiesto. No es necesario para consumir el
+artefacto entregado.
 
-- `models/random_forest_a_final.joblib`;
-- `output/metadata_modelo_final.json`.
+## Artefactos
 
-No lo ejecute si solamente quiere demostrar el modelo entregado. El
-entrenamiento final no calcula una métrica nueva sobre esas mismas filas; el
-desempeño reportado procede de la validación cruzada agrupada.
+| Ruta | Contrato |
+|---|---|
+| `output/metricas_por_fold.csv` | 60 evaluaciones con métricas, tamaños, clases y tiempos |
+| `output/comparacion_consolidada.csv` | 12 combinaciones con media y desviación muestral |
+| `output/asignacion_folds.csv` | evidencia por fila de particiones compartidas |
+| `output/pesos_clase_por_fold.csv` | frecuencias y pesos calculados desde train |
+| `output/tiempos_por_fold.csv` | entrenamiento e inferencia por fold |
+| `output/matriz_*.csv` | 12 matrices de confusión acumuladas |
+| `output/configuracion_ejecucion.json` | entorno, parámetros y hashes de evidencias |
+| `output/metadata_modelo_final.json` | contrato, entorno y hash del modelo final |
+| `output/ejecucion_completa_rc3.log` | log de la comparación oficial |
+| `output/entrenamiento_modelo_final_rc3.log` | log del entrenamiento final |
 
-## Archivos principales
+`RELEASE_MANIFEST.json` declara los hashes del modelo, los datos y los
+resultados oficiales RC3. Excluye intencionalmente `output/ensayo_reducido/`,
+porque ese directorio contiene una prueba acotada que no debe utilizarse en el
+informe. El manifiesto tampoco se incluye a sí mismo, para evitar una
+autorreferencia imposible.
+
+## Estructura del repositorio
 
 ```text
 phenological_prediction/
-|-- data/                         CSV usados por A, A′ y B
-|-- models/                       modelo final Random Forest A
-|-- output/                       métricas, matrices y metadatos verificados
-|-- tests/                        pruebas de integridad del release candidate
-|-- ejecutar.py                   comparación red vs. Random Forest
-|-- entrenar_modelo_final.py      entrenamiento y empaquetado del modelo A
-|-- demo.py                       inferencia interactiva o por argumentos
-|-- DATA_PROVENANCE.md            procedencia y condiciones de los datos
-|-- requirements.txt              versiones exactas de dependencias
-|-- VERSION                       versión del proyecto
-|-- CHANGELOG.md                  cambios por release candidate
-`-- RELEASE_MANIFEST.json         identidad y hashes de artefactos
+├── data/                       CSV derivados
+├── docs/                       decisiones y auditorías técnicas
+├── models/                     paquete de inferencia
+├── output/                     evidencias y resultados
+├── tests/                      pruebas unitarias y de integridad
+├── configuracion.py            configuración central RC3
+├── ejecutar.py                 evaluación cruzada
+├── entrenar_modelo_final.py    entrenamiento para inferencia
+├── demo.py                     interfaz de inferencia
+├── DATA_LICENSE.md             condiciones de los datos
+├── DATA_PROVENANCE.md          linaje y transformaciones
+├── CODE_LICENSE.md             situación jurídica del código
+├── RELEASE_MANIFEST.json       integridad de datos y artefactos oficiales RC3
+├── requirements.txt
+└── VERSION
 ```
 
-Las principales evidencias del informe son:
+## Limitaciones técnicas
 
-- `output/comparacion_consolidada.csv`: medias y desviaciones.
-- `output/metricas_por_fold.csv`: detalle de las 60 evaluaciones.
-- `output/configuracion_ejecucion.json`: versiones, parámetros y protocolo.
-- `output/comparacion_metricas.png`: resumen visual.
-- `output/matriz_*.csv`: matrices de confusión acumuladas.
-- `output/metadata_modelo_final.json`: identidad y rangos del modelo final.
+- La caída entre validación aleatoria y agrupada evidencia sensibilidad
+  territorial; en Random Forest A es 0,066359 de accuracy y 0,174911 de F1
+  macro.
+- Los folds agrupados 1, 2 y 4 de A no contienen Floración en test.
+- La validación no reserva temporadas completas ni una región externa.
+- No hubo búsqueda sistemática de hiperparámetros.
+- La red densa se conserva como baseline heredado, no como arquitectura
+  demostrada óptima.
+- Las probabilidades no fueron calibradas ni evaluadas mediante Brier score,
+  log-loss o curvas de calibración.
+- Los CSV son snapshots procesados; este repositorio no reproduce por sí solo
+  la descarga original desde PEP725, NASA POWER y Copernicus.
 
-## Solución de problemas frecuentes
+## Datos, código y documentación
 
-### `python` no se reconoce como comando
+Los CSV se distribuyen para uso académico no comercial bajo las condiciones
+detalladas en [`DATA_LICENSE.md`](DATA_LICENSE.md) y el linaje de
+[`DATA_PROVENANCE.md`](DATA_PROVENANCE.md). El campo `license_short` de todas
+las observaciones PEP725 entregadas declara `CC BY-NC 4.0`.
 
-Pruebe `py -3.13 --version`. Si tampoco funciona, instale Python 3.13, active la
-opción para añadirlo al `PATH` y abra una terminal nueva.
+El código no tiene una licencia abierta concedida; consulte
+[`CODE_LICENSE.md`](CODE_LICENSE.md). La licencia de datos no se extiende al
+código ni al modelo por inferencia automática.
 
-### La línea no muestra `(.venv)`
+La guía de recepción y ejecución destinada a la entrega se mantiene fuera del
+ZIP del proyecto como **Anexo A — Guía de recepción y consumo del entregable
+técnico**. Este README comienza con el repositorio ya disponible y se concentra
+en su contrato de ingeniería.
 
-El entorno no está activado. Vuelva a ejecutar el comando correspondiente a su
-sistema operativo. La activación se pierde al cerrar la terminal.
+Fuentes metodológicas y de uso:
 
-### PowerShell bloquea `Activate.ps1`
+- [PEP725 Dataset](https://pep725.eu/dataset/)
+- [PEP725 Data Use Policy](https://pep725.eu/pep725_data_use_policy/)
+- [NASA POWER Referencing Guide](https://power.larc.nasa.gov/docs/referencing/)
+- [Copernicus Data Space Terms](https://dataspace.copernicus.eu/terms-and-conditions)
 
-Use solamente para la ventana actual:
+## Documentación técnica
 
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-```
+- [`docs/decision_modelo.md`](docs/decision_modelo.md)
+- [`docs/auditoria_resultados_cp10.md`](docs/auditoria_resultados_cp10.md)
+- [`docs/modelo_final_cp11.md`](docs/modelo_final_cp11.md)
+- [`docs/folds_compartidos.md`](docs/folds_compartidos.md)
+- [`docs/ponderacion_clases.md`](docs/ponderacion_clases.md)
+- [`docs/tiempos_y_dispersion.md`](docs/tiempos_y_dispersion.md)
+- [`docs/hiperparametros_random_forest.md`](docs/hiperparametros_random_forest.md)
+- [`docs/hiperparametros_red_neuronal.md`](docs/hiperparametros_red_neuronal.md)
+- [`docs/early_stopping_red_neuronal.md`](docs/early_stopping_red_neuronal.md)
 
-### Error al importar NumPy, SciPy, scikit-learn o TensorFlow
+## Advertencias conocidas
 
-Compruebe que `(.venv)` esté visible y reinstale las versiones del proyecto:
-
-```powershell
-python -m pip install --force-reinstall -r requirements.txt
-python -m pip check
-```
-
-No instale paquetes individualmente con versiones diferentes, porque puede
-crear una combinación binaria incompatible.
-
-### No se encuentra un CSV o el archivo Joblib
-
-Asegúrese de ejecutar los comandos desde la carpeta raíz del proyecto y de que
-existan `data/` y `models/random_forest_a_final.joblib`.
-
-### Aparecen advertencias, pero no `FAILED` ni una excepción final
-
-Las advertencias de TensorFlow, NumPy o Joblib no necesariamente significan que
-la ejecución falló. En las pruebas, revise que el resumen final sea `OK`. En la
-demo, confirme que aparezca una macro-etapa y las cinco probabilidades.
-
-## Metodología y controles
-
-- Validación principal: `StratifiedGroupKFold` por `s_id`, cinco folds.
-- Validación aleatoria: control secundario con `StratifiedKFold`, cinco folds.
-- Imputación: mediana ajustada exclusivamente con entrenamiento en cada fold.
-- Escalado: aplicado solo a la red y ajustado con entrenamiento.
-- Balance: pesos de clase en la red y `class_weight="balanced"` en el bosque.
-- Semilla: 42.
-- Random Forest: 400 árboles.
-- Integridad: hashes de datos, resultados y modelo en el manifiesto.
-
-## Limitaciones
-
-- Los datos europeos no demuestran aplicabilidad operacional en Chile.
-- La validación por estación no reserva temporadas completas.
-- Floración tiene cobertura geográfica limitada en algunos folds.
-- La desviación entre folds evidencia heterogeneidad territorial.
-- El NDVI disponible no mejoró los promedios de A′ frente a B.
-- El modelo clasifica alrededor de una fecha observada; no demuestra una
-  anticipación prospectiva con horizonte definido.
-- Las probabilidades del bosque no están calibradas.
-
-## Procedencia y distribución
-
-Los dos CSV integran observaciones de PEP725, variables climáticas de NASA POWER
-e información Sentinel-2 para la línea con NDVI. Consulte
-`DATA_PROVENANCE.md` antes de copiar o publicar los datos.
-
-La entrega académica se realiza en un contexto privado. Este repositorio no
-concede derechos adicionales sobre las fuentes originales y no tiene todavía
-una licencia pública para el código.
-
-## Trazabilidad del pre-release
-
-- Versión: `0.1.0-rc.2`.
-- Commit técnico verificado: `96b4e94687e8ff0aa7f904509ec0c2cdb4f0751d`.
-- Python: 3.13.5.
-- TensorFlow: 2.21.0.
-- scikit-learn: 1.6.1.
-- Parámetros y hashes: `RELEASE_MANIFEST.json` y archivos de `output/`.
-
-El release candidate contiene la evidencia reproducible, el modelo final y la
-demo. La liberación `0.1.0` requiere una decisión posterior y no debe inferirse
-solamente de que la ejecución local haya sido satisfactoria.
+- TensorFlow 2.21.0 no utiliza GPU en Windows nativo; la comparación oficial se
+  ejecutó en CPU.
+- TensorFlow puede informar retracing durante la validación cruzada. Es una
+  advertencia de rendimiento y no invalidó la corrida completada.
+- joblib 1.5.3 puede emitir un `DeprecationWarning` al cargar con NumPy 2.5.2.
+  El artefacto fue cargado y probado correctamente con las versiones fijadas.
+- Las advertencias no sustituyen el criterio de salida: cualquier `FAILED`,
+  `ERROR`, excepción no controlada o hash distinto debe investigarse.
